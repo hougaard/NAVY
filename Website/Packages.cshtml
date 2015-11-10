@@ -1,0 +1,81 @@
+﻿@{
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "NAVY Packages";
+
+    var db = Database.Open("navygetdb");
+
+    string selectQueryString;
+    object[] parms = null;
+
+    if (Request.QueryString["q"] == null)
+    {
+        selectQueryString = "SELECT name,description,version,owner FROM navyget_package ORDER BY Name";
+    }
+    else
+    {
+        selectQueryString = "SELECT name,description,version,owner FROM navyget_package WHERE name like @0 OR description like @1 ORDER BY Name";
+        parms = new object[] { "%" + Request.QueryString["q"] + "%", "%" + Request.QueryString["q"] + "%" };
+    }
+}
+
+<hgroup class="title">
+    <h1>@Page.Title.</h1>
+    <h2></h2>
+</hgroup>
+
+<article>
+    @if (WebSecurity.IsAuthenticated)
+    {
+        <p>
+            <a href="~/Uploadnewpackage">Upload New Package</a>
+        </p>
+    }
+    <table>
+       <thead>
+           <tr>
+               <th>Name</th>
+               <th>Description</th>
+               <th>Version</th>
+               <th>Owner</th>
+           </tr>
+       </thead>
+       <tbody>
+           @foreach(var row in db.Query(selectQueryString,parms)){
+               string shortdesc = row.description;
+               if (shortdesc.Length > 30)
+               {
+                   for (int i = 30; i < shortdesc.Length; i++)
+                   {
+                       if (shortdesc[i] == ' ')
+                       {
+                           shortdesc = shortdesc.Substring(0, i);
+                           break;
+                       }
+                   }
+               }
+            <tr>
+                <td>
+                    <a href="~/package?name=@row.name">
+                        @row.name
+                    </a>
+                </td>
+                <td>@shortdesc</td>
+                <td>@row.version</td>
+                <td>@row.owner</td>
+            </tr>
+           }
+       </tbody>
+   </table>
+</article>
+
+<aside>
+    <h3>Learn more</h3>
+    <p>
+        Visit these blog for more information on NAV
+    </p>
+    <ul>
+        <li><a href="http://www.hougaard.com">Erik Hougaard</a></li>
+        <li><a href="http://www.nav-skills.com">Mark Brummel</a></li>
+        <li><a href="http://www.vjeko.com">Vjeko Babić</a></li>
+    </ul>
+</aside>

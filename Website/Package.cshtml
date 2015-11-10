@@ -1,0 +1,67 @@
+﻿@{
+    if (Request.QueryString["name"] == null)
+    {
+        Response.Redirect("~/");
+    }
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = Request.QueryString["name"];
+
+    var db = Database.Open("navygetdb");
+
+    var rec = db.QuerySingle("SELECT name,description,30,version,owner FROM navyget_package WHERE Name=@0", Request.QueryString["name"]);
+
+    var versions = db.Query("SELECT * from navyget_version where name=@0 order by timestamp DESC", Request.QueryString["name"]);
+}
+
+<hgroup class="title">
+    <h1>
+        @rec.name by @rec.owner
+        <br />
+    </h1>
+    <h2>@rec.description</h2>
+</hgroup>
+
+<article>
+    <p>
+        @if (WebSecurity.IsAuthenticated)
+        {
+        <a href="~/Uploadnewversion?name=@rec.name">Upload New Version Of Package</a>
+        }
+    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Version</th>
+                <th>Description</th>
+                <th>Min. NAV</th>
+                <th>Max. NAV</th>
+                <th>Uploaded</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in versions)
+            {
+                <tr>
+                    <td><a href="~/Download.aspx?name=@row.name&version=@row.version">@row.version</a></td>
+                    <td>@row.description</td>
+                    <td>@row.min_nav_buildno</td>
+                    <td>@row.max_nav_buildno</td>
+                    <td>@row.timestamp</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</article>
+
+<aside>
+    <h3>Aside Title</h3>
+    <p>
+        Use this area to provide additional information.
+    </p>
+    <ul>
+        <li><a href="~/">Home</a></li>
+        <li><a href="~/About">About</a></li>
+        <li><a href="~/Contact">Contact</a></li>
+    </ul>
+</aside>

@@ -1,0 +1,40 @@
+﻿@{
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "NAVYget.org - Fresh software for NAV";
+}
+
+@section featured {
+<section class="featured">
+    <div class="content-wrapper">
+        <hgroup class="title">
+            <h1>@Page.Title. <br /></h1>
+            <h2>Extend your Microsoft Dynamics NAV with NAVY packages - start here:</h2>
+        </hgroup>
+            <div id="searchBox" role="search">
+                <form action="/packages" method="get">
+                    <input name="q" id="searchBoxInput" class="expanding-search" placeholder="Search Packages" value="" autocomplete="off" autofocus />
+                    <input id="searchBoxSubmit" type="submit" value="Submit" />
+                </form>
+            </div>
+    </div>
+</section>
+}
+
+<h3>We suggest the following:</h3>
+
+<ol class="round">
+    <li class="one">
+        <h5>Getting Started</h5>
+        Download and install the NAVY client command line tool. Get it here <a href="/NAVY.zip">Download NAVY Client</a>
+    </li>
+
+    <li class="two">
+        <h5>Search, find NAVY packages </h5>
+        Search or browse the repository of packages here <a href="~/Package">Packages</a>
+    </li>
+
+    <li class="three">
+        <h5>Install youe packages with NAVY</h5>
+        Use the NAVY client to download and/or install the package in your NAV installation. Without the need for manual merge and object importing.
+    </li>
+</ol>

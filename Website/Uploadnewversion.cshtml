@@ -1,0 +1,132 @@
+﻿@using Microsoft.Web.Helpers;
+@{
+    if (!WebSecurity.IsAuthenticated)
+    {
+        Response.Redirect("/");
+    }
+    Layout = "~/_SiteLayout.cshtml";
+    Page.Title = "Upload new NAVY Package";
+
+    Validation.RequireField("Name", "Package name is required.");
+    Validation.RequireField("Description", "Package description is required.");
+    Validation.RequireField("Version", "Package version is required.");
+
+    var db = Database.Open("navygetdb");
+
+    var pkg = db.QuerySingle("SELECT * navyget_package where Name=@0", Request.QueryString["Name"]);
+    if (pkg.owner != WebSecurity.CurrentUserName)
+    {
+        Response.Redirect("/");
+    }
+    var rec = new NAVYlib.Version();
+
+    if (IsPost && Validation.IsValid())
+    {
+        if (ModelState.IsValid)
+        {
+            if (Request.Form.Count > 0)
+            {
+                var updatepackage = @"UPDATE [navyget_package]
+	                                    SET [version] = @0
+	                                    WHERE Name=@1";
+                db.Execute(updatepackage, new Object[] {
+                                                        Request.Form["Version"],
+                                                        Request.Form["Name"]
+                                                        });
+
+                rec.name = Request.Form["Name"];
+                rec.description = Request.Form["Description"];
+                rec.timestamp = DateTime.Now;
+                rec.version = Request.Form["Version"];
+                rec.min_nav_buildno = Int32.Parse(Request.Form["min_nav_buildno"]);
+                rec.max_nav_buildno = Int32.Parse(Request.Form["max_nav_buildno"]);
+                rec.ispublic = Request.Form["IsPublic"] == "on";
+                if (Request.Files.Count > 0)
+                {
+                    using (var br = new BinaryReader(Request.Files[0].InputStream))
+                    {
+                        rec.package = br.ReadBytes((int)Request.Files[0].ContentLength);
+                    }
+                }
+            }
+            var insertQuery = @"INSERT INTO [navyget_version]
+                                            ([name]
+                                            ,[version]
+                                            ,[description]
+                                            ,[min_nav_buildno]
+                                            ,[max_nav_buildno]
+                                            ,[ispublic]
+                                            ,[timestamp]
+                                            ,[package]) " +
+                                "VALUES (@0, @1, @2,@3,@4,@5,@6,@7)";
+            db.Execute(insertQuery, rec.name,
+                                                    rec.version,
+                                                    rec.description,
+                                                    rec.min_nav_buildno,
+                                                    rec.max_nav_buildno,
+                                                    rec.ispublic,
+                                                    rec.timestamp,
+                                                    rec.package);
+            Response.Redirect("~/Packages");
+        }
+    }
+}
+
+<hgroup class="title">
+    <h1>@Page.Title.</h1>
+    <h2></h2>
+</hgroup>
+
+<article>
+    <p>
+     @Html.ValidationSummary("Errors with your submission:")   
+    </p>
+    <form method="post" action="" enctype="multipart/form-data" >
+        <fieldset>
+            <legend>Add version to package</legend>
+            <div>
+                <label>Package:</label>
+                <input name="Name" readonly="readonly" type="text" size="50" value="@Request.QueryString["Name"]" />
+            </div>
+            <div>
+                <label>Version Description:</label>
+                <input name="Description" type="text" size="50" />
+            </div>
+           <div>
+                <label>Version:</label>
+                <input name="Version" type="text" size="50" />
+            </div>
+            <div>
+                <label>NAV Build No. (from->to):</label>
+                <input name="min_nav_buildno" type="text" size="6" />
+                to
+                <input name="max_nav_buildno" type="text" size="6" />
+            </div>
+            <div>
+                <label>Is Public:</label>
+                <input name="IsPublic" type="checkbox" />
+            </div>
+            <div>
+                <label>Package File</label>
+                <input name="file" type="file" />
+             </div>
+            <div>
+                <label>&nbsp;</label>
+                <input type="submit" value="Insert" class="submit" />
+            </div>
+        </fieldset>
+    </form>
+</article>
+
+<aside>
+    <h3>NAV Build and Version Numbers</h3>
+    <p>
+        Microsoft Dynamics uses at least 3 different numbers for versions. <br />
+        Typical in this form 9.0.42815.0.
+        In NAVY we convert that to an integer as VXZZZZZ, so the above number is 9042815.<br />
+        A package can be compatible with a series of NAV version and a minimum and maximum build
+        number most be supplied with the package.<br />
+        Multiple versions of the same package can be uploaded and the NAVY client will select the
+        right now based on the build/version number.
+    </p>
+</aside>

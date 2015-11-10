@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Package xmlns="http://schemas.hougaard.com/navz/2016/manifest">
+  <App Id="9a1ac510-b983-4406-9614-be67d7bb4306"
+       Name="Foqus Finance"
+       Publisher="E Foqus Danmark"
+       Description=""
+       Version="8.2.0.0"
+       CompatibilityId="1.0.0.0" />
+  <Payload>
+    <NAVObjects>
+      <ObjectFile FileName="foqusfinance_8.0.0.fob" type="FOB" ImportOrder="1" />
+    </NAVObjects>
+    <Deltas>
+      <Delta Type="Codeunit" ID="12" DeltaFile="COD12.DELTA" />
+      <Delta Type="Codeunit" ID="408" DeltaFile="COD408.DELTA" />
+      <Delta Type="Codeunit" ID="41" DeltaFile="COD41.DELTA" />
+      <Delta Type="Codeunit" ID="418" DeltaFile="COD418.DELTA" />
+      <Delta Type="Codeunit" ID="80" DeltaFile="COD80.DELTA" />
+      <Delta Type="Codeunit" ID="90" DeltaFile="COD90.DELTA" />
+      <Delta Type="Page" ID="279" DeltaFile="PAG279.DELTA" />
+      <Delta Type="Page" ID="344" DeltaFile="PAG344.DELTA" />
+      <Delta Type="Page" ID="51" DeltaFile="PAG51.DELTA" />
+      <Delta Type="Page" ID="52" DeltaFile="PAG52.DELTA" />
+      <Delta Type="Table" ID="18" DeltaFile="TAB18.DELTA" />
+      <Delta Type="Table" ID="21" DeltaFile="TAB21.DELTA" />
+      <Delta Type="Table" ID="242" DeltaFile="TAB242.DELTA" />
+      <Delta Type="Table" ID="379" DeltaFile="TAB379.DELTA" />
+      <Delta Type="Table" ID="39" DeltaFile="TAB39.DELTA" />
+      <Delta Type="Table" ID="5050" DeltaFile="TAB5050.DELTA" />
+    </Deltas>
+  </Payload>
+</Package>
